@@ -15,7 +15,7 @@ namespace CastleGrimtol.Project
             while (Playing)
             {
                 Console.Clear();
-                System.Console.WriteLine($"Greetings {CurrentPlayer.Name}. You are on level {CurrentRoom.Name}");
+                System.Console.WriteLine($"Greetings {CurrentPlayer.Name}. You are on level {CurrentRoom.Name}. Your point: {CurrentPlayer.Score}");
                 if (CurrentPlayer.Inventory.Count > 0)
                 {
                     System.Console.WriteLine("Your man-puse has:");
@@ -41,13 +41,14 @@ namespace CastleGrimtol.Project
                 string Choice = Console.ReadLine();
                 string[] Action = Choice.Split(' ');
 
-                if (Action[0].ToLower() == "take")
+                if (Action[0].ToLower() == "take" || Action[0].ToLower() == "t")
                 {
                     Item TakeItem = FindItem(Action[1]);
                     if (TakeItem != null)
                     {
                         System.Console.WriteLine($"You have add a {TakeItem.Name} to your man-purse.");
                         string Pause1 = Console.ReadLine();
+                        CurrentPlayer.Score ++;
                     }
                     else
                     {
@@ -55,7 +56,7 @@ namespace CastleGrimtol.Project
                         string Pause = Console.ReadLine();
                     }
                 }
-                else if (Action[0].ToLower() == "go")
+                else if (Action[0].ToLower() == "go" || Action[0].ToLower() == "g")
                 {
                     int RoomNum;
                     Int32.TryParse(CurrentRoom.Name, out RoomNum);
@@ -64,6 +65,7 @@ namespace CastleGrimtol.Project
                         if (Rooms[(RoomNum + 1).ToString()] != null)
                         {
                             CurrentRoom = Rooms[(RoomNum + 1).ToString()];
+                            CurrentPlayer.Score ++;
                         }
                     }
                     else if (Action[1].ToLower() == "up" && !CurrentRoom.CanMove)
@@ -75,10 +77,11 @@ namespace CastleGrimtol.Project
                         if (Rooms[(RoomNum - 1).ToString()] != null)
                         {
                             CurrentRoom = Rooms[(RoomNum - 1).ToString()];
+                            CurrentPlayer.Score ++;
                         }
                     }
                 }
-                else if (Action[0].ToLower() == "use")
+                else if (Action[0].ToLower() == "use" || Action[0].ToLower() == "u")
                 {
                     System.Console.WriteLine($"{CurrentPlayer.Inventory.Contains(SearchInventory("sheers")).ToString()}");
                     if (Action[1] == CurrentRoom.MustDo)
@@ -128,9 +131,14 @@ namespace CastleGrimtol.Project
                             System.Console.WriteLine("You can now find the stairs to the next level.");
                         }
                     }
-
+                    if(CurrentRoom.Name == "4" && Action[1].ToLower() != "boogie-wonderland")
+                    {
+                        System.Console.WriteLine("Thats not his favorite song and the Gnome King boops you on the head and you lose consciousness and are thrown out of the tower.");
+                        Console.ReadLine();
+                        Playing = false;
+                    }
                 }
-                else if (Action[0].ToLower() == "help")
+                else if (Action[0].ToLower() == "help" || Action[0].ToLower() == "h")
                 {
                     System.Console.WriteLine("To move levels: type 'go' + 'up/down'");
                     System.Console.WriteLine("To take item: type 'take' + 'item name'");
@@ -138,7 +146,7 @@ namespace CastleGrimtol.Project
                     System.Console.WriteLine("To quit game: type 'quit'");
                     string Pause = Console.ReadLine();
                 }
-                else if (Action[0].ToLower() == "quit")
+                else if (Action[0].ToLower() == "quit" || Action[0].ToLower() == "q")
                 {
                     Playing = false;
                     System.Environment.Exit(0);
@@ -227,6 +235,7 @@ namespace CastleGrimtol.Project
         public Game(string name)
         {
             Player Player = new Player(name);
+            Player.Score = 0;
             CurrentPlayer = Player;
         }
     }
